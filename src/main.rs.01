@@ -1,0 +1,49 @@
+
+use std::env::args;
+
+use clap::{App, Arg, ArgMatches};
+
+struct Cli {
+    pattern : String,
+    path : std::path::PathBuf
+}
+
+
+pub fn main() {
+    let matches = fun_name();
+
+    let pattern = std::env::args().nth(1).expect("pattern is missing");
+    let path = std::env::args().nth(2).expect("file path is missing");
+
+    let cli = Cli { pattern, path : std::path::PathBuf::from(path) };
+
+    let contents = std::fs::read_to_string(&cli.path).expect("file not found");
+
+    for line in contents.lines() {
+        if line.contains(&cli.pattern) {
+            println!("{}", line);
+            }
+    }
+}
+
+fn fun_name() -> ArgMatches {
+    App::new("mygrep program")
+        .version("1.0.0")
+        .author("Aman Shaw  <amanshaw4511@protonmail.com>")
+        .about("an alternative to grep")
+        .arg(Arg::new("pattern")
+             .short('p')
+             .long("pattern")
+             .value_name("PATTERN")
+             .about("regex pattern to find")
+             .takes_value(true)
+             )
+        .arg(Arg::new("file")
+             .short('f')
+             .long("file")
+             .value_name("FILE")
+             .about("file to find for matches")
+             .takes_value(true)
+             )
+        .get_matches()
+}
